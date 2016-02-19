@@ -1,0 +1,301 @@
+<link href="<?php echo $this->basePath('css/style.css') ?>" rel="stylesheet" type="text/css" media="all" />
+<script type="text/javascript" src="<?php echo $this->basePath('js/jquery.jscrollpane.min.js') ?>"></script>
+		<script type="text/javascript" id="sourcecode">
+			$(function()
+			{
+				$('.scroll-pane').jScrollPane();
+			});
+		</script>
+
+<!----details-product-slider--->
+				<!-- Include the Etalage files -->
+					<link rel="stylesheet" href="<?php echo $this->basePath('css/etalage.css') ?>">
+					<script src="<?php echo $this->basePath('js/jquery.etalage.min.js') ?>"></script>
+				<!-- Include the Etalage files -->
+				<script>
+					
+                                            jQuery(document).ready(function($){
+                                                 sliderInAction();   
+					});
+                                        
+                                        function sliderInAction(){
+                                            $('#etalage').etalage({
+								thumb_image_width: 300,
+								thumb_image_height: 400,
+								
+								show_hint: true,
+								click_callback: function(image_anchor, instance_id){
+									alert('Callback example:\nYou clicked on an image with the anchor: "'+image_anchor+'"\n(in Etalage instance: "'+instance_id+'")');
+								}
+							});
+							// This is for the dropdown list example:
+							$('.dropdownlist').change(function(){
+								etalage_show( $(this).find('option:selected').attr('class') );
+							});
+                                        }
+				</script>
+				<!----//details-product-slider--->	
+<!-- top scrolling -->
+<script type="text/javascript" src="<?php echo $this->basePath('js/move-top.js') ?>"></script>
+<script type="text/javascript" src="<?php echo $this->basePath('js/easing.js') ?>"></script>
+
+
+<?php
+$form->setAttribute('action', $this->url('usabaazar', array('action' => 'ebay')));
+$form->setAttribute('id', 'searchQuery');
+$form->setAttribute('class', 'form-wrapper');
+$form->prepare();
+
+echo $this->form()->openTag($form);
+echo $this->formRow($form->get('searchQuery'));
+echo $this->formSubmit($form->get('submit'));
+echo $this->form()->closeTag();
+
+//$attr=array();
+//
+//foreach ($resp->Item->Variations->Variation as $itemVariation){
+//    foreach($itemVariation->VariationSpecifics->NameValueList as $NameValueList){
+//        $attr[]=$NameValueList->Name;
+//    }
+//}
+//
+//echo json_encode($attr);
+
+?>
+
+
+<?php if ($resp != null) {?>
+
+<div class="single">
+         <div class="wrap">
+     	    
+		<div class="cont span_2_of_3">
+			  <div class="labout span_1_of_a1">
+				<!-- start product_slider -->
+				     <ul id="etalage">
+
+<?php 
+
+
+$productSlider='';
+ if($resp){
+     
+     $productSlider .='<li>
+                    <img class="etalage_thumb_image" src="'.$resp->Item->PictureURL.'" />
+                    <img class="etalage_source_image" src="'.$resp->Item->PictureURL.'" />
+                    </li>';
+     if($resp->Item->Variations->Pictures){
+     foreach ($resp->Item->Variations->Pictures->VariationSpecificPictureSet as $picSet){
+         foreach ($picSet->PictureURL as $picURL){
+             $productSlider .='<li>
+                            <img class="etalage_thumb_image" src="'.$picURL.'" />
+                            <img class="etalage_source_image" src="'.$picURL.'" />
+                            </li>';
+         }
+     }
+     }
+ }
+            echo $productSlider;
+?>
+						</ul>
+					
+					
+			<!-- end product_slider -->
+			</div>
+			<div class="cont1 span_2_of_a1">
+				<h3 class="m_3"><?php echo $resp->Item->Title;?></h3>
+				
+				<div class="price_single">
+							  <?php
+                                                            if($resp->Item->Variations->Variation){
+                                                               if($resp->Item->Variations->Variation->DiscountPriceInfo){
+                                                                    $originalRetailPrice=(double)($resp->Item->Variations->Variation->DiscountPriceInfo->OriginalRetailPrice);
+                                                                    echo '<span class="reducedfrom">'.number_format($originalRetailPrice, 2, '.', '').'</span>';
+                                                                  }
+                                                              }
+                                                          ?>
+
+							  <span class="actual"><?php
+                                                          $currentPrice=(double)($resp->Item->CurrentPrice);
+                                                          echo number_format($currentPrice, 2, '.', '');
+                                                          ?></span><a href="#">click for offer</a>
+				</div>
+                                <div>
+                                    <span>Shipping Price:<?php echo $resp->Item->ShippingCostSummary->ListedShippingServiceCost;?> </span>
+                                </div>
+                                <div>
+                                    <span>Item Condition:<?php echo $resp->Item->ConditionDisplayName;?> </span>
+                                </div>
+                                <div>
+                                    <span style="font-size: 12px"><?php echo $resp->Item->QuantityAvailableHint; 
+                                            if($resp->Item->QuantityThreshold)
+                                                {
+                                                    echo $resp->Item->QuantityThreshold. " available";
+                                                }else{
+                                                    echo 'Items available';
+                                                }
+                                             
+                                            if ($resp->Item->QuantitySold){
+                                                    echo '<span style="color:blue">\\'.$resp->Item->QuantitySold.'sold</span>';
+                                            }
+                                          ?> </span>
+                                </div>
+				<ul class="options">
+					<h4 class="m_9">Select a Size</h4>
+					<li><a href="#">6</a></li>
+					<li><a href="#">7</a></li>
+					<li><a href="#">8</a></li>
+					<li><a href="#">9</a></li>
+					<div class="clear"></div>
+				</ul>
+				<div class="btn_form">
+				   <form>
+					 <input type="submit" value="buy now" title="">
+                                         <input type="button" value="Add to Cart" title="">
+                                         <?php echo '<input type="button" onclick="window.open(\''.$resp->Item->ViewItemURLForNaturalSearch.'\', \'_blank\');" value="Ebay Link" title="">';?>
+                                         <script type="text/javascript">
+                                         </script>
+				  </form>
+                                    
+				</div>
+                                
+				<ul class="add-to-links">
+    			   <li><img src="<?php echo $this->basePath('images/wish.png')?>" alt=""/><a href="#">Add to wishlist</a></li>
+    			</ul>
+    			<p class="m_desc">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+    			
+                <div class="social_single">	
+				   <ul>	
+					  <li class="fb"><a href="#"><span> </span></a></li>
+					  <li class="tw"><a href="#"><span> </span></a></li>
+					  <li class="g_plus"><a href="#"><span> </span></a></li>
+					  <li class="rss"><a href="#"><span> </span></a></li>		
+				   </ul>
+			    </div>
+			</div>
+			<div class="clear"></div>
+     
+     
+         <ul id="flexiselDemo3">
+			<li><img src="<?php echo $this->basePath('images/pic11.jpg')?>" /><div class="grid-flex"><a href="#">Bloch</a><p>Rs 850</p></div></li>
+			<li><img src="<?php echo $this->basePath('images/pic10.jpg')?>" /><div class="grid-flex"><a href="#">Capzio</a><p>Rs 850</p></div></li>
+			<li><img src="<?php echo $this->basePath('images/pic9.jpg')?>" /><div class="grid-flex"><a href="#">Zumba</a><p>Rs 850</p></div></li>
+			<li><img src="<?php echo $this->basePath('images/pic8.jpg')?>" /><div class="grid-flex"><a href="#">Bloch</a><p>Rs 850</p></div></li>
+			<li><img src="<?php echo $this->basePath('images/pic7.jpg')?>" /><div class="grid-flex"><a href="#">Capzio</a><p>Rs 850</p></div></li>
+		 </ul>
+	    <script type="text/javascript">
+		 $(window).load(function() {
+			//$("#flexiselDemo1").flexisel();
+			$("#flexiselDemo2").flexisel({
+				enableResponsiveBreakpoints: true,
+		    	responsiveBreakpoints: { 
+		    		portrait: { 
+		    			changePoint:480,
+		    			visibleItems: 1
+		    		}, 
+		    		landscape: { 
+		    			changePoint:640,
+		    			visibleItems: 2
+		    		},
+		    		tablet: { 
+		    			changePoint:768,
+		    			visibleItems: 3
+		    		}
+		    	}
+		    });
+		
+			$("#flexiselDemo3").flexisel({
+				visibleItems: 5,
+				animationSpeed: 1000,
+				autoPlay: true,
+				autoPlaySpeed: 3000,    		
+				pauseOnHover: true,
+				enableResponsiveBreakpoints: true,
+		    	responsiveBreakpoints: { 
+		    		portrait: { 
+		    			changePoint:480,
+		    			visibleItems: 1
+		    		}, 
+		    		landscape: { 
+		    			changePoint:640,
+		    			visibleItems: 2
+		    		},
+		    		tablet: { 
+		    			changePoint:768,
+		    			visibleItems: 3
+		    		}
+		    	}
+		    });
+		    
+		});
+	</script>
+	<script type="text/javascript" src="<?php echo $this->basePath('js/jquery.flexisel.js')?>"></script>
+	 <div class="toogle">
+     	<h3 class="m_3">Product Details</h3>
+     	<p class="m_text">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum.</p>
+     </div>					
+	 <div class="toogle">
+     	<h3 class="m_3">Product Reviews</h3>
+     	<p class="m_text">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum.</p>
+     </div>
+     </div>
+     <div class="rsidebar span_1_of_left">
+         <section  class="sky-form">
+                  <h4>Seller Information</h4>
+                        <div class="row row1">
+                            <span style="font-size: 16px; color: #00ACED;">
+<!--                            <div class="col col-4">-->
+                             
+                                <?php 
+                                $sellerInfo= ucfirst($resp->Item->Seller->UserID).'('.$resp->Item->Seller->FeedbackScore;
+                                if(strcmp($resp->Item->Seller->FeedbackRatingStar, 'YellowShooting') ===0){
+                                    $sellerInfo.='<img src="images/yellowShootingStar.png" alt="" title="'.ucfirst($resp->Item->Seller->UserID).'('.$resp->Item->Seller->PositiveFeedbackPercent.'Positive Feedback)'.'"/>';
+                                }
+                                $sellerInfo .=')</br>';
+                                if($resp->Item->Seller->PositiveFeedbackPercent)
+                                {
+                                    $sellerInfo .= '<span style="font-size: 12px; color: #555555">'.$resp->Item->Seller->PositiveFeedbackPercent. '% positive feedback</span>';
+                                }
+                                echo $sellerInfo;
+//                            ?>
+                            </span></br>
+                            
+                            <span style="font-size: 13px; color: #555555;">
+                                
+                             
+                                <?php 
+                                if($resp->Item->Storefront){
+                                    $storeInfo= 'Visit Store: <a href="ebaystoredisplay?_storeName='.ucfirst($resp->Item->Storefront->StoreName).'" style="font-size: 16px; color:#00ACED">'.ucfirst($resp->Item->Storefront->StoreName).'</a>';
+                                    echo $storeInfo;
+                                }
+                            ?>
+                            </span>
+                            
+                        </div>		
+
+
+                </section>
+        </div>
+             
+     <div class="clear"></div>
+	 </div>
+     </div>
+<?php }?>       
+       
+       
+        <script type="text/javascript">
+           var form = document.getElementById('searchQuery');
+           if (form.attachEvent) {
+                form.attachEvent("submit", processForm);
+            } else {
+                form.addEventListener("submit", processForm);
+            }
+            
+            function processForm(e) {
+                if (e.preventDefault) e.preventDefault();
+                
+                window.location.href="<?php echo $this->url('usabaazar', array('action'=>'ebay'))?>"+"?searchQuery="+encodeURIComponent(document.getElementById('search').value);
+                return false;
+            }
+            
+       </script>       

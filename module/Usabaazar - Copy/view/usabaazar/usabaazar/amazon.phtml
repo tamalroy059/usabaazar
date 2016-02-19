@@ -1,0 +1,22 @@
+<?php
+$form->setAttribute('action', $this->url('usabaazar', array('action' => 'amazon')));
+$form->setAttribute('id', 'searchQuery');
+$form->setAttribute('class', 'form-wrapper');
+$form->prepare();
+
+echo $this->form()->openTag($form);
+echo $this->formRow($form->get('searchQuery'));
+echo $this->formSubmit($form->get('submit'));
+echo $this->form()->closeTag();
+
+?>
+
+<!--<form class="form-wrapper" action="<?php echo $this->url('usabaazar', array('action' => 'ebay')) ?>" method="post">
+            <input type="text" name="searchField" id="search" placeholder="Search Ebay" required>
+            <input type="submit" value="search" id="submit">
+</form>-->
+       
+       <div class="login">
+        <?php echo $result;?>
+        </div>
+       

@@ -1,0 +1,187 @@
+<?php
+$form->setAttribute('action', $this->url('usabaazar', array('action' => 'amazon')));
+$form->setAttribute('id', 'searchQuery');
+$form->setAttribute('class', 'form-wrapper');
+$form->prepare();
+
+echo $this->form()->openTag($form);
+echo $this->formRow($form->get('searchQuery'));
+echo $this->formSubmit($form->get('submit'));
+echo $this->form()->closeTag();
+
+?>
+
+<!--<form class="form-wrapper" action="<?php echo $this->url('usabaazar', array('action' => 'ebay')) ?>" method="post">
+            <input type="text" name="searchField" id="search" placeholder="Search Ebay" required>
+            <input type="submit" value="search" id="submit">
+</form>-->
+       
+       <div class="login">
+        <?php echo $result;?>
+        </div>
+       <div id="aspectScript"></div>
+       <script type="text/javascript">
+           var form = document.getElementById('searchQuery');
+           if (form.attachEvent) {
+                form.attachEvent("submit", processForm);
+            } else {
+                form.addEventListener("submit", processForm);
+            }
+            
+            function processForm(e) {
+                if (e.preventDefault) e.preventDefault();
+                
+                window.location.href= document.URL.split('?')[0]+"?searchQuery="+encodeURIComponent(document.getElementById('search').value);
+                return false;
+            }
+            
+            var itemsPerPage;
+            var cURL=document.URL;
+            var searchItem=getUrlParameter('searchQuery');
+
+            var pageNumber=getUrlParameter('_pageNum');
+            if(pageNumber===undefined){
+                pageNumber=1;
+            }
+
+            itemsPerPage=getUrlParameter('_ipage');
+            if(itemsPerPage===undefined){
+                itemsPerPage=9;
+            }
+
+
+            var aspectProp={};
+            var aspectCount=0;
+
+
+            var variableString=cURL.split('?')[1];
+            var variableArray=variableString.split('&');
+
+            for(var i=0;i<variableArray.length;i++){
+                var temp1=variableArray[i].split('=');
+                if(temp1[0]!=="searchQuery" && temp1[0][0]!=='_'){
+                    aspectProp[temp1[0]]=temp1[1];
+                }
+            }
+
+            var aspectPropertyCount=Object.keys(aspectProp).length;
+
+            var categoryId=getUrlParameter('_cId%5B0%5D');
+            if(categoryId===undefined){
+                categoryId=-1;
+            }
+
+//            if(searchItem!==undefined){
+//            $('.login').append('<div id="loading">Loading......</div>');
+//            $.ajax({
+//                    type: 'POST',
+//                    //url: 'phpFiles/ebay_displayItemsURL.php',
+//                    url: '<?php echo $this->url('usabaazar', array('action' => 'ebay'))?>',
+//                    data: {
+//                        itemsPerPageOption: itemsPerPage,
+//                        searchQuery: searchItem,
+//                        aspectPropertyCount: aspectPropertyCount,
+//                        aspectPropertyArray: aspectProp,
+//                        categoryId:categoryId,
+//                        pageNumber:pageNumber,
+//                        currentURL:cURL
+//                    }
+//                }).done(function(data){
+//                    $('#loading').remove();
+//                    $('.login').append(data);
+//                }).fail(function(){
+//                    alert("Shop_3 Failed");
+//                });
+//
+//            }
+
+
+
+
+            var newsc2 = '<script id="sc1" type="text/javascript">\n\
+                        function itemsPerPageFunction(){pageChangeEffect();}\n\
+                        function go(){aspectFilterEffect();}\n\
+                        function goCategory(caller){categoryClickEffect(caller);}\n\
+                        <\/script>';
+            $('#aspectScript').append(newsc2);
+            eval(document.getElementById('sc1').innerHTML);
+
+            function pageChangeEffect(){
+                var pageDiv=document.getElementById('itemsPerPageOption');
+                var itemsPerPageOnClick=Number(pageDiv.options[pageDiv.selectedIndex].value);
+                if(itemsPerPage!==itemsPerPageOnClick){
+                    var fURL=addParam(document.URL,"_ipage",itemsPerPageOnClick);
+                    fURL=addParam(fURL,"_pageNum",1);
+                    window.location.href=fURL;
+                }
+            }
+
+            function categoryClickEffect(caller){
+                var domElement=$(caller.target);
+                var name=domElement.attr('name');
+                var value=domElement.attr('value');
+                var fURL=addParam(document.URL,'_cId',value);
+                fURL=addParam(fURL,"_pageNum",1);
+                window.location.href=fURL;
+            }
+
+
+            function aspectFilterEffect(){
+                var aspectTag=$('.aspectTag');
+                var name;var value;
+                for (var i=0;i<aspectTag.length;i++){
+                    if(aspectTag[i].checked){
+                        name=aspectTag[i].name;
+                        value=aspectTag[i].value;
+                        break;
+                    }
+                }
+                var fURL=addParam(document.URL,name,value);
+                fURL=addParam(fURL,"_pageNum",1);
+                window.location.href=fURL;
+            }
+
+
+            function alertFunction(x){
+                alert(x);
+            }
+
+
+
+
+        function getUrlParameter(sParam)
+            {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++) 
+            {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == sParam) 
+                {
+                    return sParameterName[1];
+                }
+            }
+        }
+
+        function addEbayParam(url, param, value) {
+               var a = document.createElement('a'), regex = /[?&]([^=]+)=([^&]*)/g;
+               var match, str = []; a.href = url; value=value||"";
+               while (match = regex.exec(a.search))
+                   str.push(match[1] + "=" + match[2]);
+               str.push(encodeURIComponent(param) + "=" + encodeURIComponent(value));
+               a.search = (a.search.substring(0,1) == "?" ? "" : "?") + str.join("&");
+               return a.href;
+            }
+
+
+        function addParam(url, param, value) {
+           var a = document.createElement('a'), regex = /[?&]([^=]+)=([^&]*)/g;
+           var match, str = []; a.href = url; value=value||"";
+           while (match = regex.exec(a.search))
+               if (encodeURIComponent(param) != match[1]) str.push(match[1] + "=" + match[2]);
+           str.push(encodeURIComponent(param) + "=" + encodeURIComponent(value));
+           a.search = (a.search.substring(0,1) == "?" ? "" : "?") + str.join("&");
+           return a.href;
+        }
+            
+       </script>       
